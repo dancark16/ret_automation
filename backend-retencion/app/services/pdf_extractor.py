@@ -37,19 +37,30 @@ def extract_from_bytes(pdf_bytes: bytes) -> RetentionData:
     ret_match = re.search(r'No\.\s+([\d-]+)', full_text)
     ret_number = ret_match.group(1).strip() if ret_match else ""
     ret_serial = ret_number.split("-")[-1]
-
-    # Nombre del cliente — línea en mayúsculas de 15+ caracteres, no es dirección ni dato genérico
-    skip_words = {"HUACHI", "PANAMERICANA", "CEVALLOS", "AMBIENTE", "EMISIÓN", "PRODUCCIÓN"}
+    # Nombre del cliente — el PDF mezcla columnas: "NOMBRE APELLIDO AUTORIZACIÓN"
+    # Estrategia 1: buscar patrón "NOMBRE... AUTORIZACIÓN" y quedarse con lo de antes
     client_name = "DESCONOCIDO"
-    for line in full_text.splitlines():
-        clean = line.strip()
-        if (
-            re.match(r'^[A-ZÁÉÍÓÚÑ][A-ZÁÉÍÓÚÑ\s]{14,}$', clean)
-            and not any(w in clean for w in skip_words)
-        ):
-            client_name = clean
-            break
-
+    m = re.search(r'([A-ZÁÉÍÓÚÑ][A-ZÁÉÍÓÚÑ\s]{10,}?)\s+AUTORIZACIÓN', full_text)
+    if m:
+        client_name = m.group(1).strip()
+    else:
+        # Estrategia 2: buscar línea en mayúsculas limpia
+        SKIP = {
+            "COMPROBANTE DE RETENCIÓN", "NÚMERO DE AUTORIZACIÓN", "FECHA Y HORA DE",
+            "CLAVE DE ACCESO", "OBLIGADO A LLEVAR CONTABILIDAD",
+            "Razón Social / Nombres y Apellidos:", "Información Adicional",
+        }
+        for line in full_text.splitlines():
+            clean = line.strip()
+            if (
+                re.match(r'^[A-ZÁÉÍÓÚÑ][A-ZÁÉÍÓÚÑ\s]{14,}$', clean)
+                and clean not in SKIP
+                and not any(w in clean for w in ["R.U.C", "DIRECCIÓN", "MATRIZ", "HUACHI",
+                                                  "PANAMERICANA", "AMBIENTE", "EMISIÓN"])
+                and not re.search(r'\d', clean)
+            ):
+                client_name = clean
+                break
     # Tabla de comprobantes retenidos
     invoice_raw = invoice_date = ""
     renta_pct = iva_pct = renta_base = iva_base = renta_value = iva_value = 0.0

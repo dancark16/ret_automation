@@ -1,0 +1,96 @@
+<button mat-button (click)="router.navigate(['/pendientes'])">
+    <mat-icon>arrow_back</mat-icon> Volver
+</button>
+
+<div *ngIf="r" class="detalle-wrapper">
+
+    <h2>{{ r.client_name }}</h2>
+    <p class="ret-number">No. Retención: <strong>{{ r.ret_number }}</strong></p>
+
+    <div class="cards-row">
+
+        <mat-card>
+            <mat-card-header>
+                <mat-card-title>Factura</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+                <p>Número: <strong>{{ r.invoice_sequential }}</strong></p>
+                <p>Fecha: <strong>{{ r.invoice_date }}</strong></p>
+            </mat-card-content>
+        </mat-card>
+
+        <mat-card>
+            <mat-card-header>
+                <mat-card-title>Valores del PDF</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+                <table class="valores-table">
+                    <thead>
+                        <tr>
+                            <th>Concepto</th>
+                            <th>%</th>
+                            <th>Base</th>
+                            <th>Valor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Impuesto a la Renta</td>
+                            <td>{{ r.renta_pct }}</td>
+                            <td>{{ r.renta_base | number:'1.2-2' }}</td>
+                            <td><strong>{{ r.renta_value | number:'1.2-2' }}</strong></td>
+                        </tr>
+                        <tr>
+                            <td>IVA</td>
+                            <td>{{ r.iva_pct }}</td>
+                            <td>{{ r.iva_base | number:'1.2-2' }}</td>
+                            <td><strong>{{ r.iva_value | number:'1.2-2' }}</strong></td>
+                        </tr>
+                        <tr class="total-row">
+                            <td colspan="3"><strong>Total retención</strong></td>
+                            <td><strong>{{ totalRet | number:'1.2-2' }}</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </mat-card-content>
+        </mat-card>
+
+    </div>
+
+    <div class="progreso" *ngIf="procesando || r.status === 'completado' || r.status === 'error'">
+        <h3>Progreso</h3>
+        <mat-list>
+            <mat-list-item *ngFor="let s of steps">
+                <mat-icon matListItemIcon [style.color]="iconColor(s.status)">{{ icon(s.status) }}</mat-icon>
+                <span matListItemTitle>{{ s.label }}</span>
+                <span matListItemLine>{{ s.detail }}</span>
+            </mat-list-item>
+        </mat-list>
+
+        <div class="result ok" *ngIf="r.status === 'completado'">
+            <mat-icon>check_circle</mat-icon>
+            <strong>Procesado correctamente</strong>
+        </div>
+
+        <div class="result error" *ngIf="r.status === 'error'">
+            <mat-icon>error</mat-icon>
+            <strong>Error: {{ r.observation }}</strong>
+        </div>
+    </div>
+
+    <div class="acciones" *ngIf="!procesando">
+        <button mat-raised-button color="primary" [disabled]="r.status === 'completado' || r.status === 'en_proceso'"
+            (click)="procesar()">
+            <mat-icon>play_arrow</mat-icon>
+            {{ r.status === 'completado' ? 'Ya procesada' : 'Procesar en Monica' }}
+        </button>
+
+        <a mat-stroked-button [href]="svc.pdfUrl(r.id)" target="_blank">
+            <mat-icon>picture_as_pdf</mat-icon>
+            Ver PDF
+        </a>
+    </div>
+
+    <mat-spinner *ngIf="procesando" diameter="36" class="spinner"></mat-spinner>
+
+</div>

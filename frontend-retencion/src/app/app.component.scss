@@ -1,0 +1,12 @@
+.spacer { flex: 1; }
+
+.active {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+}
+
+.page-content {
+  padding: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}

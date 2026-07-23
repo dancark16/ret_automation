@@ -1,0 +1,45 @@
+.stats {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+
+    mat-card {
+        min-width: 160px;
+    }
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    line-height: 1;
+    margin-bottom: 4px;
+
+    &.blue {
+        color: #1565c0;
+    }
+
+    &.green {
+        color: #2e7d32;
+    }
+
+    &.red {
+        color: #c62828;
+    }
+}
+
+.stat-label {
+    color: #666;
+    font-size: 0.95rem;
+}
+
+.actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+
+.upload {
+    margin-top: 8px;
+}

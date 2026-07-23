@@ -1,0 +1,17 @@
+.full-width {
+    width: 100%;
+}
+
+.clickable-row {
+    cursor: pointer;
+
+    &:hover {
+        background: #f5f5f5;
+    }
+}
+
+.empty-msg {
+    color: #999;
+    margin-top: 24px;
+    text-align: center;
+}

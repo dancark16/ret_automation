@@ -1,0 +1,69 @@
+.detalle-wrapper {
+    margin-top: 16px;
+}
+
+.ret-number {
+    color: #666;
+    margin-top: -8px;
+}
+
+.cards-row {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+
+    mat-card {
+        min-width: 240px;
+    }
+}
+
+.valores-table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th {
+        text-align: left;
+        padding: 4px 8px;
+        color: #666;
+        font-weight: 500;
+    }
+
+    td {
+        padding: 4px 8px;
+    }
+
+    .total-row td {
+        border-top: 1px solid #e0e0e0;
+        padding-top: 8px;
+    }
+}
+
+.progreso {
+    margin-bottom: 24px;
+}
+
+.result {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+
+    &.ok {
+        color: #2e7d32;
+    }
+
+    &.error {
+        color: #c62828;
+    }
+}
+
+.acciones {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.spinner {
+    margin-top: 16px;
+}

@@ -69,6 +69,15 @@ async def subir_pdf(file: UploadFile = File(...), db: Session = Depends(get_db))
     return r
 
 
+@router.delete("/{id}", status_code=204)
+def eliminar(id: int, db: Session = Depends(get_db)):
+    r = db.get(Retencion, id)
+    if not r:
+        raise HTTPException(404, "No encontrada")
+    db.delete(r)
+    db.commit()
+
+
 @router.post("/{id}/procesar", response_model=RetenciónOut)
 async def encolar_procesamiento(id: int, db: Session = Depends(get_db)):
     r = db.get(Retencion, id)
