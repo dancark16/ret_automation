@@ -44,20 +44,11 @@ class MonicaAutomator:
         raise TimeoutError(f"Ventana no apareció: {title_re}")
 
     def open_facturacion(self):
-        main = self._wait_window("MODULOS.*")
+        main = self._win(MONICA_TITLE)
         main.set_focus()
         time.sleep(0.5)
-        # Clic en el botón Facturación (texto visible)
-        try:
-            btn = main.child_window(title="Facturación", control_type="Button")
-            btn.click_input()
-        except Exception:
-            # Fallback: buscar por texto parcial
-            for ctrl in main.children():
-                if "acturaci" in ctrl.window_text():
-                    ctrl.click_input()
-                    break
-        time.sleep(1)
+        keyboard.send_keys("%f")   # Alt+F = Facturación
+        time.sleep(1.5)
 
     def open_invoice(self, invoice_number: str) -> bool:
         """
