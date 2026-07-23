@@ -5,6 +5,7 @@ PRIMER USO: ejecuta inspect_monica() con Monica abierta para
 verificar títulos y nombres de controles exactos.
 """
 import time
+import re
 from pywinauto import Application, keyboard
 
 EXPECTED_RENTA = 2.000
@@ -36,9 +37,18 @@ class MonicaAutomator:
         deadline = time.time() + timeout
         while time.time() < deadline:
             try:
+                # Primero buscar top-level
                 wins = self.app.windows(title_re=title_re)
                 if wins:
                     return wins[0]
+            except Exception:
+                pass
+            try:
+                # Luego buscar entre MDI children de Monica
+                main = self.app.window(title_re=MONICA_TITLE)
+                for desc in main.descendants():
+                    if re.match(title_re, desc.window_text()):
+                        return desc
             except Exception:
                 pass
             time.sleep(0.3)
