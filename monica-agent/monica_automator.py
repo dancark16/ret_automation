@@ -11,8 +11,12 @@ EXPECTED_RENTA = 2.000
 EXPECTED_IVA = 30.000
 
 
+MONICA_TITLE = "M O N I C A.*"
+MODULOS_TITLE = "MODULOS.*"
+
+
 def inspect_monica():
-    app = Application(backend="win32").connect(title_re="MONICA.*|MODULOS.*", timeout=5)
+    app = Application(backend="win32").connect(title_re=MONICA_TITLE, timeout=5)
     for w in app.windows():
         print(f"\nWindow: '{w.window_text()}' | class: '{w.class_name()}'")
         for c in w.children():
@@ -25,7 +29,7 @@ class MonicaAutomator:
 
     def connect(self):
         self.app = Application(backend="win32").connect(
-            title_re="MONICA.*|MODULOS.*", timeout=10
+            title_re=MONICA_TITLE, timeout=10
         )
 
     def _win(self, title_re: str, timeout: int = 10):
@@ -41,7 +45,7 @@ class MonicaAutomator:
         raise TimeoutError(f"Ventana no encontrada: {title_re}")
 
     def open_facturacion(self):
-        main = self._win("MODULOS.*")
+        main = self._win(MODULOS_TITLE)
         main.set_focus()
         time.sleep(0.4)
         for ctrl in main.children():
