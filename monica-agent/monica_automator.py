@@ -168,12 +168,21 @@ class MonicaAutomator:
         inv = self._win("Facturacion para el Cliente.*")
         inv.set_focus()
         time.sleep(0.3)
-        # Desactivar "Imprimir Documento" checkbox ≈ (75, 617) en ventana 943x697
-        inv.click_input(coords=(75, 617))
+        # Desactivar "Imprimir Documento" checkbox ≈ (85, 613)
+        inv.click_input(coords=(85, 613))
         time.sleep(0.3)
         # Click ACEPTAR ≈ (237, 658)
         inv.click_input(coords=(237, 658))
         time.sleep(1.5)
+        # Modal "Modificar documento. Confirmar ¿ Si / No ?" — presionar Enter (foco en Si)
+        try:
+            confirm = self._win("Modificar documento.*", timeout=4)
+            confirm.set_focus()
+            time.sleep(0.2)
+            keyboard.send_keys("{ENTER}")
+            time.sleep(1)
+        except TimeoutError:
+            pass
 
     def close_facturacion(self):
         try:
