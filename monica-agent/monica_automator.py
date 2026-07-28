@@ -165,21 +165,27 @@ class MonicaAutomator:
         time.sleep(0.3)
 
     def save_and_close_invoice(self):
+        import pyautogui
         inv = self._win("Facturacion para el Cliente.*")
         inv.set_focus()
         time.sleep(0.3)
-        # Desactivar "Imprimir Documento" checkbox ≈ (73, 579)
-        inv.click_input(coords=(73, 579))
+
+        r = inv.rectangle()
+        # "Imprimir Documento" checkbox — coordenadas absolutas de pantalla
+        # Posición relativa al cliente estimada: x=73, y=579
+        pyautogui.click(r.left + 73, r.top + 579)
         time.sleep(0.3)
-        # Click ACEPTAR ≈ (237, 658)
-        inv.click_input(coords=(237, 658))
+        # Botón ACEPTAR
+        pyautogui.click(r.left + 205, r.top + 655)
         time.sleep(1.5)
-        # Modal "Modificar documento. Confirmar ¿ Si / No ?" — foco está en No, moverse a Si
+
+        # Modal "Modificar documento. Confirmar ¿ Si / No ?"
         try:
             confirm = self._win("Modificar documento.*", timeout=4)
-            confirm.set_focus()
+            cr = confirm.rectangle()
             time.sleep(0.2)
-            keyboard.send_keys("{LEFT}{ENTER}")
+            # Botón "Sí" — izquierda del modal ≈ x=120, y=130 relativo al modal
+            pyautogui.click(cr.left + 120, cr.top + 130)
             time.sleep(1)
         except TimeoutError:
             pass
