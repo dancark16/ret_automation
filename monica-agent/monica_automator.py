@@ -62,28 +62,44 @@ class MonicaAutomator:
         time.sleep(1.5)
 
     def open_invoice(self, invoice_sequential: str) -> bool:
-        fact = self._win("Facturacion.*")
-        fact.set_focus()
+        main = self._win(MONICA_TITLE)
+        main.set_focus()
         time.sleep(0.4)
+        keyboard.send_keys("%m")   # Alt+M = Modificar
+        time.sleep(1)
 
-        for ctrl in fact.children():
-            if "odificar" in ctrl.window_text():
-                ctrl.click_input()
+        # El diálogo de búsqueda puede tener varios títulos posibles
+        dlg = None
+        for title in ["Modificar Facturas.*", "Buscar.*", ".*[Ff]actura.*[Bb]uscar.*", ".*[Nn]úmero.*"]:
+            try:
+                dlg = self._win(title, timeout=3)
                 break
-        time.sleep(0.6)
+            except TimeoutError:
+                pass
 
-        dlg = self._win("Modificar Facturas.*")
+        if dlg is None:
+            # Intentar con cualquier ventana nueva que no sea Facturacion ni MODULOS
+            time.sleep(0.5)
+            known = {"Facturacion", "MODULOS", "MONICA", "M O N I C A   11  - Su Asistente en los Negocios", ""}
+            main2 = self.app.window(title_re=MONICA_TITLE)
+            for desc in main2.descendants():
+                if desc.window_text() not in known:
+                    dlg = desc
+                    break
+
+        if dlg is None:
+            return False
+
         dlg.set_focus()
+        time.sleep(0.2)
         edits = dlg.children(class_name="TEdit")
         if edits:
             edits[0].triple_click_input()
             edits[0].type_keys(invoice_sequential.lstrip("0"), with_spaces=False)
+        else:
+            keyboard.send_keys(invoice_sequential.lstrip("0"))
         time.sleep(0.3)
-
-        for ctrl in dlg.children():
-            if "ACEPTAR" in ctrl.window_text().upper():
-                ctrl.click_input()
-                break
+        keyboard.send_keys("{ENTER}")
         time.sleep(1.5)
 
         try:
