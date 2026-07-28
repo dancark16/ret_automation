@@ -109,13 +109,17 @@ class MonicaAutomator:
             return False
 
     def open_retenciones(self):
-        inv = self._win(".*[Ff]actura.*|MONICA.*")
+        inv = self._win("Facturacion para el Cliente.*")
         inv.set_focus()
         time.sleep(0.3)
-        for ctrl in inv.children():
-            if "etenci" in ctrl.window_text():
-                ctrl.click_input()
-                break
+        # Botón "Retenciones" es painted — click por coordenadas relativas a la ventana
+        rect = inv.rectangle()
+        w = rect.right - rect.left
+        h = rect.bottom - rect.top
+        # Botón está en el sidebar derecho, último ítem (~96% ancho, ~90% alto)
+        bx = int(w * 0.955)
+        by = int(h * 0.895)
+        inv.click_input(coords=(bx, by))
         time.sleep(0.8)
 
     def check_and_fix_retenciones(self, job: dict) -> dict:
@@ -186,7 +190,7 @@ class MonicaAutomator:
             pass
 
     def set_observaciones(self, ret_serial: str):
-        inv = self._win(".*[Ff]actura.*|MONICA.*")
+        inv = self._win("Facturacion para el Cliente.*")
         inv.set_focus()
         time.sleep(0.3)
         obs_text = f"Ret-{ret_serial}"
@@ -200,7 +204,7 @@ class MonicaAutomator:
         time.sleep(0.3)
 
     def save_and_close_invoice(self):
-        inv = self._win(".*[Ff]actura.*|MONICA.*")
+        inv = self._win("Facturacion para el Cliente.*")
         inv.set_focus()
         for ctrl in inv.children():
             if ctrl.window_text().strip().lower() == "aceptar":
