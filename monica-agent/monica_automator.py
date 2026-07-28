@@ -157,13 +157,11 @@ class MonicaAutomator:
         inv.set_focus()
         time.sleep(0.3)
         obs_text = f"Ret-{ret_serial}"
-        try:
-            obs = inv.child_window(title_re=".*bservaci.*")
-            obs.triple_click_input()
-            obs.type_keys(obs_text, with_spaces=True)
-        except Exception:
-            keyboard.send_keys("{TAB 5}")
-            keyboard.send_keys(obs_text)
+        # Campo Observaciones — ventana 943x697, campo inferior izquierdo ≈ (210, 470)
+        inv.click_input(coords=(210, 470))
+        time.sleep(0.2)
+        keyboard.send_keys("^a")
+        keyboard.send_keys(obs_text, with_spaces=True)
         time.sleep(0.3)
 
     def save_and_close_invoice(self):
