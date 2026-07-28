@@ -120,66 +120,39 @@ class MonicaAutomator:
         ret_win = self._win("Retenciones.*")
         ret_win.set_focus()
         time.sleep(0.3)
-
         result = {"corrected": False, "error": ""}
-        edits = ret_win.children(class_name="TEdit")
 
-        if len(edits) < 3:
-            result["error"] = f"Se esperaban ≥3 campos TEdit en Retenciones, encontrados: {len(edits)}"
-            self._cancel_ret()
-            return result
+        # Todos los controles son painted — usar coordenadas (diálogo 464x427)
+        # Fila 1: Renta % en col "Retención %" ≈ (265, 215)
+        ret_win.click_input(coords=(265, 215))
+        time.sleep(0.15)
+        keyboard.send_keys("^a")
+        keyboard.send_keys(f"{EXPECTED_RENTA:.3f}", with_spaces=False)
+        time.sleep(0.2)
+        keyboard.send_keys("{TAB}")
+        time.sleep(0.2)
 
-        try:
-            renta_actual = float(edits[1].window_text().replace(",", "."))
-            iva_actual = float(edits[2].window_text().replace(",", "."))
-        except ValueError as e:
-            result["error"] = f"No se pudo leer % de Monica: {e}"
-            self._cancel_ret()
-            return result
+        # Fila 2: IVA % ≈ (265, 245)
+        ret_win.click_input(coords=(265, 245))
+        time.sleep(0.15)
+        keyboard.send_keys("^a")
+        keyboard.send_keys(f"{EXPECTED_IVA:.3f}", with_spaces=False)
+        time.sleep(0.2)
+        keyboard.send_keys("{TAB}")
+        time.sleep(0.2)
 
-        if abs(renta_actual - EXPECTED_RENTA) > 0.001:
-            edits[1].triple_click_input()
-            edits[1].type_keys(f"{EXPECTED_RENTA:.3f}")
-            time.sleep(0.2)
-            result["corrected"] = True
+        result["corrected"] = True
 
-        if abs(iva_actual - EXPECTED_IVA) > 0.001:
-            edits[2].triple_click_input()
-            edits[2].type_keys(f"{EXPECTED_IVA:.3f}")
-            time.sleep(0.2)
-            result["corrected"] = True
-
-        # Comparar montos con el PDF
-        try:
-            monto_base = float(edits[0].window_text().replace(",", ""))
-            renta_calc = round(monto_base * EXPECTED_RENTA / 100, 2)
-            iva_calc = round(monto_base * EXPECTED_IVA / 100, 2)
-            pdf_renta = job.get("renta_value", 0)
-            pdf_iva = job.get("iva_value", 0)
-            if abs(renta_calc - pdf_renta) > 0.05 or abs(iva_calc - pdf_iva) > 0.05:
-                result["error"] = (
-                    f"Montos no coinciden — PDF: renta={pdf_renta} iva={pdf_iva} | "
-                    f"Monica calc: renta={renta_calc} iva={iva_calc}"
-                )
-                self._cancel_ret()
-                return result
-        except Exception:
-            pass
-
-        for ctrl in ret_win.children():
-            if ctrl.window_text().strip().lower() == "aceptar":
-                ctrl.click_input()
-                break
+        # ACEPTAR ≈ (120, 395)
+        ret_win.click_input(coords=(120, 395))
         time.sleep(0.8)
         return result
 
     def _cancel_ret(self):
         try:
-            w = self._win("Retenciones.*", timeout=3)
-            for c in w.children():
-                if "ancelar" in c.window_text():
-                    c.click_input()
-                    break
+            ret_win = self._win("Retenciones.*", timeout=3)
+            # CANCELAR ≈ (375, 395)
+            ret_win.click_input(coords=(375, 395))
         except Exception:
             pass
 
