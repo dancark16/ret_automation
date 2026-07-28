@@ -86,15 +86,14 @@ class MonicaAutomator:
             return False
 
         dlg.set_focus()
-        time.sleep(0.2)
-        # Campo "Nro. Documento" — painted, usar coordenadas (diálogo 349x196)
-        dlg.click_input(coords=(235, 78))
-        time.sleep(0.1)
+        time.sleep(0.3)
+        # El campo Nro. Documento ya está enfocado al abrir el diálogo
         keyboard.send_keys("^a")
+        time.sleep(0.1)
         keyboard.send_keys(invoice_sequential.lstrip("0"), with_spaces=False)
         time.sleep(0.2)
-        # Botón ACEPTAR
-        dlg.click_input(coords=(100, 160))
+        # Tab hasta ACEPTAR y Enter
+        keyboard.send_keys("{TAB}{SPACE}")
         time.sleep(2)
 
         try:
