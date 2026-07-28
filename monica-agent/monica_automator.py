@@ -68,24 +68,19 @@ class MonicaAutomator:
         keyboard.send_keys("%m")   # Alt+M = Modificar
         time.sleep(1)
 
-        # El diálogo de búsqueda puede tener varios títulos posibles
+        # Buscar el diálogo "Modificar Facturas"
         dlg = None
-        for title in ["Modificar Facturas.*", "Buscar.*", ".*[Ff]actura.*[Bb]uscar.*", ".*[Nn]úmero.*"]:
-            try:
-                dlg = self._win(title, timeout=3)
-                break
-            except TimeoutError:
-                pass
-
-        if dlg is None:
-            # Intentar con cualquier ventana nueva que no sea Facturacion ni MODULOS
-            time.sleep(0.5)
-            known = {"Facturacion", "MODULOS", "MONICA", "M O N I C A   11  - Su Asistente en los Negocios", ""}
+        deadline = time.time() + 8
+        while time.time() < deadline:
+            known = {"Facturacion", "MODULOS", "MONICA", ""}
             main2 = self.app.window(title_re=MONICA_TITLE)
             for desc in main2.descendants():
-                if desc.window_text() not in known:
+                if desc.window_text() not in known and desc.window_text() != main2.window_text():
                     dlg = desc
                     break
+            if dlg:
+                break
+            time.sleep(0.3)
 
         if dlg is None:
             return False
@@ -96,14 +91,21 @@ class MonicaAutomator:
         if edits:
             edits[0].triple_click_input()
             edits[0].type_keys(invoice_sequential.lstrip("0"), with_spaces=False)
-        else:
-            keyboard.send_keys(invoice_sequential.lstrip("0"))
         time.sleep(0.3)
-        keyboard.send_keys("{ENTER}")
-        time.sleep(1.5)
+
+        # Click en ACEPTAR (TBitBtn)
+        clicked = False
+        for ctrl in dlg.children():
+            if "ACEPTAR" in ctrl.window_text().upper():
+                ctrl.click_input()
+                clicked = True
+                break
+        if not clicked:
+            keyboard.send_keys("{ENTER}")
+        time.sleep(2)
 
         try:
-            self._win(".*[Ff]actura.*", timeout=5)
+            self._win("Facturacion para el Cliente.*", timeout=6)
             return True
         except TimeoutError:
             return False
