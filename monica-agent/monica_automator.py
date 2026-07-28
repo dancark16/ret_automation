@@ -123,23 +123,19 @@ class MonicaAutomator:
         result = {"corrected": False, "error": ""}
 
         # Todos los controles son painted — usar coordenadas (diálogo 464x427)
-        # Fila 1: Renta % en col "Retención %" ≈ (265, 215)
-        ret_win.click_input(coords=(265, 215))
-        time.sleep(0.15)
+        # Fila 1: Renta % ≈ y=185 (fila IVA estaba en 215, Renta es ~30px más arriba)
+        ret_win.click_input(coords=(265, 185))
+        time.sleep(0.2)
         keyboard.send_keys("^a")
         keyboard.send_keys(f"{EXPECTED_RENTA:.3f}", with_spaces=False)
-        time.sleep(0.2)
-        keyboard.send_keys("{TAB}")
-        time.sleep(0.2)
+        time.sleep(0.3)
 
-        # Fila 2: IVA % ≈ (265, 245)
-        ret_win.click_input(coords=(265, 245))
-        time.sleep(0.15)
+        # Fila 2: IVA % ≈ y=215
+        ret_win.click_input(coords=(265, 215))
+        time.sleep(0.2)
         keyboard.send_keys("^a")
         keyboard.send_keys(f"{EXPECTED_IVA:.3f}", with_spaces=False)
-        time.sleep(0.2)
-        keyboard.send_keys("{TAB}")
-        time.sleep(0.2)
+        time.sleep(0.3)
 
         result["corrected"] = True
 
