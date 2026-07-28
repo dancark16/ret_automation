@@ -116,9 +116,9 @@ class MonicaAutomator:
         rect = inv.rectangle()
         w = rect.right - rect.left
         h = rect.bottom - rect.top
-        # Botón está en el sidebar derecho, último ítem (~96% ancho, ~90% alto)
-        bx = int(w * 0.955)
-        by = int(h * 0.895)
+        # Botón "Retenciones" — sidebar derecho, último botón
+        bx = int(w * 0.947)   # ~895px en ventana de 943px
+        by = int(h * 0.916)   # ~638px en ventana de 697px
         inv.click_input(coords=(bx, by))
         time.sleep(0.8)
 
