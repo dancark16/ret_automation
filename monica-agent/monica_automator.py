@@ -55,14 +55,11 @@ class MonicaAutomator:
         raise TimeoutError(f"Ventana no encontrada: {title_re}")
 
     def open_facturacion(self):
-        main = self._win(MODULOS_TITLE)
+        main = self._win(MONICA_TITLE)
         main.set_focus()
-        time.sleep(0.4)
-        for ctrl in main.children():
-            if "acturaci" in ctrl.window_text():
-                ctrl.click_input()
-                break
-        time.sleep(1)
+        time.sleep(0.5)
+        keyboard.send_keys("%f")
+        time.sleep(1.5)
 
     def open_invoice(self, invoice_sequential: str) -> bool:
         fact = self._win("Facturacion.*")
