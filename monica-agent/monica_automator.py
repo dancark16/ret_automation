@@ -167,12 +167,13 @@ class MonicaAutomator:
     def save_and_close_invoice(self):
         inv = self._win("Facturacion para el Cliente.*")
         inv.set_focus()
-        for ctrl in inv.children():
-            if ctrl.window_text().strip().lower() == "aceptar":
-                ctrl.click_input()
-                return
-        keyboard.send_keys("{ENTER}")
-        time.sleep(1)
+        time.sleep(0.3)
+        # Desactivar "Imprimir Documento" checkbox ≈ (75, 617) en ventana 943x697
+        inv.click_input(coords=(75, 617))
+        time.sleep(0.3)
+        # Click ACEPTAR ≈ (237, 658)
+        inv.click_input(coords=(237, 658))
+        time.sleep(1.5)
 
     def close_facturacion(self):
         try:
