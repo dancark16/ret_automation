@@ -171,9 +171,8 @@ class MonicaAutomator:
         time.sleep(0.3)
 
         r = inv.rectangle()
-        # "Imprimir Documento" checkbox — coordenadas absolutas de pantalla
-        # Posición relativa al cliente estimada: x=73, y=579
-        pyautogui.click(r.left + 73, r.top + 579)
+        # "Imprimir Documento" checkbox — client offset verificado: (41, 595)
+        pyautogui.click(r.left + 41, r.top + 595)
         time.sleep(0.3)
         # Botón ACEPTAR
         pyautogui.click(r.left + 205, r.top + 655)
