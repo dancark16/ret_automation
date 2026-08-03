@@ -54,6 +54,15 @@ class MonicaAutomator:
             time.sleep(0.3)
         raise TimeoutError(f"Ventana no encontrada: {title_re}")
 
+    def click_comenzar(self):
+        """Desde la pantalla de inicio de Monica, hace click en Comenzar."""
+        main = self._win(MONICA_TITLE)
+        r = main.rectangle()
+        # "Comenzar" offset verificado: (1161, 446)
+        import pyautogui
+        pyautogui.click(r.left + 1161, r.top + 446)
+        time.sleep(1.5)
+
     def open_facturacion(self):
         main = self._win(MONICA_TITLE)
         main.set_focus()
