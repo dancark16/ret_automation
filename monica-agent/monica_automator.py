@@ -55,13 +55,22 @@ class MonicaAutomator:
         raise TimeoutError(f"Ventana no encontrada: {title_re}")
 
     def click_comenzar(self):
-        """Desde la pantalla de inicio de Monica, hace click en Comenzar."""
+        """Desde la pantalla de inicio de Monica: Comenzar → Seleccionar Empresa."""
+        import pyautogui
         main = self._win(MONICA_TITLE)
         r = main.rectangle()
         # "Comenzar" offset verificado: (1161, 446)
-        import pyautogui
         pyautogui.click(r.left + 1161, r.top + 446)
-        time.sleep(1.5)
+        time.sleep(1.0)
+        # Dialogo "Lista de Empresas" — empresa ya seleccionada, Enter = Seleccionar Empresa
+        try:
+            dlg = self._win("Lista de Empresas.*", timeout=5)
+            dlg.set_focus()
+            time.sleep(0.3)
+            keyboard.send_keys("{ENTER}")
+            time.sleep(1.5)
+        except TimeoutError:
+            pass  # Ya estaba dentro, no apareció el diálogo
 
     def open_facturacion(self):
         main = self._win(MONICA_TITLE)
