@@ -183,8 +183,8 @@ class MonicaAutomator:
             confirm = self._win("Modificar documento.*", timeout=4)
             cr = confirm.rectangle()
             time.sleep(0.2)
-            # Botón "Sí" — izquierda del modal ≈ x=120, y=130 relativo al modal
-            pyautogui.click(cr.left + 120, cr.top + 130)
+            # Botón "Sí" — offset verificado: (105, 165)
+            pyautogui.click(cr.left + 105, cr.top + 165)
             time.sleep(1)
         except TimeoutError:
             pass
