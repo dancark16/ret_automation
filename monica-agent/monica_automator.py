@@ -80,7 +80,7 @@ class MonicaAutomator:
         # Click directo en el botón Facturación del MODULOS screen
         # MODULOS window ocupa casi toda la pantalla, Facturación ≈ (265, 234) relativo al main
         r = main.rectangle()
-        pyautogui.click(r.left + 265, r.top + 234)
+        pyautogui.click(r.left + 205, r.top + 240)
         time.sleep(1.5)
 
     def open_invoice(self, invoice_sequential: str) -> bool:
