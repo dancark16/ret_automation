@@ -53,6 +53,8 @@ def process_job(job: dict, monica: MonicaAutomator):
     try:
         # Paso 1: Abrir facturación
         progress(rid, "monica_facturacion", "running", "Abriendo módulo de facturación...")
+        if monica.is_on_home_screen():
+            monica.click_comenzar()
         monica.open_facturacion()
         progress(rid, "monica_facturacion", "ok")
 
@@ -123,6 +125,9 @@ def main():
     try:
         monica.connect()
         print("Monica 11 conectada.")
+        if monica.is_on_home_screen():
+            print("Pantalla de inicio detectada, haciendo click en Comenzar...")
+            monica.click_comenzar()
     except Exception as e:
         print(f"No se pudo conectar a Monica 11: {e}")
         print("Asegúrate de que Monica 11 esté abierta antes de iniciar el agente.")

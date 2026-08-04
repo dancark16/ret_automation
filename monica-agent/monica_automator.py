@@ -140,19 +140,21 @@ class MonicaAutomator:
         time.sleep(0.3)
         result = {"corrected": False, "error": ""}
 
-        # Todos los controles son painted — usar coordenadas (diálogo 464x427)
-        # Fila 1: Renta % ≈ y=185 (fila IVA estaba en 215, Renta es ~30px más arriba)
+        renta_pct = float(job.get("renta_pct", EXPECTED_RENTA))
+        iva_pct = float(job.get("iva_pct", EXPECTED_IVA))
+
+        # Fila 1: Renta % ≈ (265, 185)
         ret_win.click_input(coords=(265, 185))
         time.sleep(0.2)
         keyboard.send_keys("^a")
-        keyboard.send_keys(f"{EXPECTED_RENTA:.3f}", with_spaces=False)
+        keyboard.send_keys(f"{renta_pct:.3f}", with_spaces=False)
         time.sleep(0.3)
 
-        # Fila 2: IVA % ≈ y=215
+        # Fila 2: IVA % ≈ (265, 215)
         ret_win.click_input(coords=(265, 215))
         time.sleep(0.2)
         keyboard.send_keys("^a")
-        keyboard.send_keys(f"{EXPECTED_IVA:.3f}", with_spaces=False)
+        keyboard.send_keys(f"{iva_pct:.3f}", with_spaces=False)
         time.sleep(0.3)
 
         result["corrected"] = True
@@ -161,6 +163,17 @@ class MonicaAutomator:
         ret_win.click_input(coords=(120, 395))
         time.sleep(0.8)
         return result
+
+    def is_on_home_screen(self) -> bool:
+        """Retorna True si Monica está en la pantalla de inicio (sin MODULOS abierto)."""
+        try:
+            main = self.app.window(title_re=MONICA_TITLE)
+            for desc in main.descendants():
+                if re.match(MODULOS_TITLE, desc.window_text()):
+                    return False
+            return True
+        except Exception:
+            return False
 
     def _cancel_ret(self):
         try:

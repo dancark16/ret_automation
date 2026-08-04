@@ -4,8 +4,9 @@ from pathlib import Path
 from datetime import datetime
 
 MONTHS_ES = {
-    1:"ENERO", 2:"FEBRERO", 3:"MARZO", 4:"ABRIL", 5:"MAYO", 6:"JUNIO",
-    7:"JULIO", 8:"AGOSTO", 9:"SEPTIEMBRE", 10:"OCTUBRE", 11:"NOVIEMBRE", 12:"DICIEMBRE"
+    1: "ENERO", 2: "FEBRERO", 3: "MARZO", 4: "ABRIL",
+    5: "MAYO", 6: "JUNIO", 7: "JULIO", 8: "AGOSTO",
+    9: "SEPTIEMBRE", 10: "OCTUBRE", 11: "NOVIEMBRE", 12: "DICIEMBRE"
 }
 
 
@@ -15,7 +16,11 @@ def _sanitize(name: str) -> str:
 
 def get_next_sequence(folder: Path, day: int) -> int:
     pattern = re.compile(rf'^RET {day}\.(\d+)', re.IGNORECASE)
-    nums = [int(m.group(1)) for f in folder.iterdir() if f.is_file() and (m := pattern.match(f.name))]
+    nums = [
+        int(m.group(1))
+        for f in folder.iterdir()
+        if f.is_file() and (m := pattern.match(f.name))
+    ]
     return max(nums, default=0) + 1
 
 
@@ -25,6 +30,7 @@ def save_retention_pdf(source: Path, job: dict, invoice_date: str, base: Path) -
     except Exception:
         fecha = datetime.today()
 
+    # Carpeta por año/mes de la retención — se crea automáticamente si no existe
     folder = base / str(fecha.year) / MONTHS_ES[fecha.month]
     folder.mkdir(parents=True, exist_ok=True)
 

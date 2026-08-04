@@ -1,31 +1,38 @@
 from pathlib import Path
 from datetime import datetime
 import openpyxl
-from openpyxl.styles import Font, PatternFill, Alignment
+from openpyxl.styles import PatternFill, Alignment
 
-HEADERS = ["FECHA", "CLIENTE", "FACTURA", "No. RETENCIÓN", "RENTA %", "IVA %", "TOTAL RET.", "OBSERVACIÓN"]
 YELLOW = PatternFill("solid", fgColor="FFFF00")
+SHEET_NAME = "RETENCIONES"
+HEADER_ROW = 3   # Los headers están en la fila 3
+DATA_START = 4   # Los datos empiezan en la fila 4
 
 MONTHS_ES = {
-    1:"ene", 2:"feb", 3:"mar", 4:"abr", 5:"may", 6:"jun",
-    7:"jul", 8:"ago", 9:"sep", 10:"oct", 11:"nov", 12:"dic"
+    1: "ene", 2: "feb", 3: "mar", 4: "abr", 5: "may", 6: "jun",
+    7: "jul", 8: "ago", 9: "sep", 10: "oct", 11: "nov", 12: "dic"
 }
 
 
+def _next_empty_row(ws) -> int:
+    """Encuentra la primera fila vacía en columna A a partir de DATA_START."""
+    row = DATA_START
+    while ws.cell(row=row, column=1).value is not None:
+        row += 1
+    return row
+
+
 def register_retention(path: Path, job: dict, invoice_date: str, observation: str = ""):
-    if path.exists():
-        wb = openpyxl.load_workbook(path)
-        ws = wb.active
+    if not path.exists():
+        raise FileNotFoundError(f"Excel no encontrado: {path}")
+
+    wb = openpyxl.load_workbook(path)
+
+    # Usar la hoja RETENCIONES (3ra hoja)
+    if SHEET_NAME in wb.sheetnames:
+        ws = wb[SHEET_NAME]
     else:
-        wb = openpyxl.Workbook()
-        ws = wb.active
-        ws.title = "Retenciones"
-        for col, h in enumerate(HEADERS, 1):
-            c = ws.cell(row=1, column=col, value=h)
-            c.font = Font(bold=True)
-        ws.column_dimensions["A"].width = 10
-        ws.column_dimensions["B"].width = 35
-        ws.column_dimensions["H"].width = 40
+        ws = wb.worksheets[2]
 
     try:
         fecha = datetime.strptime(invoice_date, "%d/%m/%Y")
@@ -35,22 +42,25 @@ def register_retention(path: Path, job: dict, invoice_date: str, observation: st
 
     total_ret = round(job.get("renta_value", 0) + job.get("iva_value", 0), 2)
 
-    row = [
-        fecha_str,
-        job.get("client_name", ""),
-        job.get("invoice_sequential", ""),
-        job.get("ret_number", ""),
-        job.get("renta_pct", 0),
-        job.get("iva_pct", 0),
-        total_ret,
-        observation,
+    row_data = [
+        fecha_str,                          # A - FECHA
+        job.get("client_name", ""),         # B - CLIENTE
+        job.get("invoice_sequential", ""),  # C - FACTURA
+        job.get("ret_number", ""),          # D - No. RETENCIÓN
+        job.get("renta_pct", 0),            # E - RENTA %
+        job.get("iva_pct", 0),              # F - IVA %
+        total_ret,                          # G - TOTAL RET.
+        observation,                        # H - OBSERVACIÓN
     ]
 
-    next_row = ws.max_row + 1
-    for col, val in enumerate(row, 1):
+    next_row = _next_empty_row(ws)
+    for col, val in enumerate(row_data, 1):
         cell = ws.cell(row=next_row, column=col, value=val)
         cell.alignment = Alignment(horizontal="left")
-        if observation and col == len(HEADERS):
-            cell.fill = YELLOW
+
+    # Fila amarilla si hay observación (indica corrección manual)
+    if observation:
+        for col in range(1, len(row_data) + 1):
+            ws.cell(row=next_row, column=col).fill = YELLOW
 
     wb.save(path)
