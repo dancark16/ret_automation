@@ -1,3 +1,4 @@
+import time
 from pathlib import Path
 from datetime import datetime
 import openpyxl
@@ -63,4 +64,13 @@ def register_retention(path: Path, job: dict, invoice_date: str, observation: st
         for col in range(1, len(row_data) + 1):
             ws.cell(row=next_row, column=col).fill = YELLOW
 
-    wb.save(path)
+    # Reintentar si el archivo está bloqueado por Excel
+    for attempt in range(5):
+        try:
+            wb.save(path)
+            return
+        except PermissionError:
+            if attempt < 4:
+                time.sleep(3)
+            else:
+                raise
