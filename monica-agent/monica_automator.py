@@ -73,10 +73,14 @@ class MonicaAutomator:
             pass  # Ya estaba dentro, no apareció el diálogo
 
     def open_facturacion(self):
+        import pyautogui
         main = self._win(MONICA_TITLE)
         main.set_focus()
         time.sleep(0.5)
-        keyboard.send_keys("%f")
+        # Click directo en el botón Facturación del MODULOS screen
+        # MODULOS window ocupa casi toda la pantalla, Facturación ≈ (265, 234) relativo al main
+        r = main.rectangle()
+        pyautogui.click(r.left + 265, r.top + 234)
         time.sleep(1.5)
 
     def open_invoice(self, invoice_sequential: str) -> bool:
