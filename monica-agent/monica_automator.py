@@ -64,13 +64,13 @@ class MonicaAutomator:
         time.sleep(1.0)
         # Dialogo "Lista de Empresas" — empresa ya seleccionada, Enter = Seleccionar Empresa
         try:
-            dlg = self._win("Lista de Empresas.*", timeout=5)
+            dlg = self._win("Lista de Empresas.*", timeout=2)
             dlg.set_focus()
             time.sleep(0.3)
             keyboard.send_keys("{ENTER}")
             time.sleep(1.5)
         except TimeoutError:
-            pass  # Ya estaba dentro, no apareció el diálogo
+            pass  # Ya estaba en MODULOS, no apareció el diálogo
 
     def open_facturacion(self):
         main = self._win(MONICA_TITLE)
