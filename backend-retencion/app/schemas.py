@@ -28,6 +28,7 @@ class RetenciónOut(RetenciónBase):
 
 class AgentJobOut(RetenciónBase):
     id: int
+    pending: bool = True
 
 
 class AgentResultIn(BaseModel):
