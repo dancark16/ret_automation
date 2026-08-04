@@ -78,6 +78,19 @@ def eliminar(id: int, db: Session = Depends(get_db)):
     db.commit()
 
 
+@router.post("/{id}/reset", response_model=RetenciónOut)
+def reset_status(id: int, db: Session = Depends(get_db)):
+    r = db.get(Retencion, id)
+    if not r:
+        raise HTTPException(404, "No encontrada")
+    r.status = "pendiente"
+    r.observation = ""
+    r.processed_at = None
+    db.commit()
+    db.refresh(r)
+    return r
+
+
 @router.post("/{id}/procesar", response_model=RetenciónOut)
 async def encolar_procesamiento(id: int, db: Session = Depends(get_db)):
     r = db.get(Retencion, id)
