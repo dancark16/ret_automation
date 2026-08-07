@@ -233,9 +233,9 @@ class MonicaAutomator:
     def close_facturacion(self):
         try:
             w = self._win("Facturacion.*", timeout=3)
-            for c in w.children():
-                if "alir" in c.window_text():
-                    c.click_input()
-                    break
+            self._focus(w)
+            time.sleep(0.3)
+            keyboard.send_keys("%s")  # Alt+S = Salir
+            time.sleep(1.0)
         except Exception:
             pass
