@@ -29,9 +29,19 @@ class MonicaAutomator:
         self.app = None
 
     def connect(self):
+        import ctypes
+        # Permite que este proceso tome el foco de ventanas en Windows
+        ctypes.windll.user32.AllowSetForegroundWindow(-1)
         self.app = Application(backend="win32").connect(
             title_re=MONICA_TITLE, timeout=10
         )
+
+    def _focus(self, win):
+        """set_focus tolerante — ignora el error de SetForegroundWindow."""
+        try:
+            win.set_focus()
+        except Exception:
+            pass
 
     def _win(self, title_re: str, timeout: int = 10):
         deadline = time.time() + timeout
@@ -65,7 +75,7 @@ class MonicaAutomator:
         # Dialogo "Lista de Empresas" — empresa ya seleccionada, Enter = Seleccionar Empresa
         try:
             dlg = self._win("Lista de Empresas.*", timeout=2)
-            dlg.set_focus()
+            self._focus(dlg)
             time.sleep(0.3)
             keyboard.send_keys("{ENTER}")
             time.sleep(1.5)
@@ -74,14 +84,14 @@ class MonicaAutomator:
 
     def open_facturacion(self):
         main = self._win(MONICA_TITLE)
-        main.set_focus()
+        self._focus(main)
         time.sleep(0.5)
         keyboard.send_keys("%f")
         time.sleep(1.5)
 
     def open_invoice(self, invoice_sequential: str) -> bool:
         main = self._win(MONICA_TITLE)
-        main.set_focus()
+        self._focus(main)
         time.sleep(0.4)
         keyboard.send_keys("%m")   # Alt+M = Modificar
         time.sleep(1)
@@ -122,7 +132,7 @@ class MonicaAutomator:
 
     def open_retenciones(self):
         inv = self._win("Facturacion para el Cliente.*")
-        inv.set_focus()
+        self._focus(inv)
         time.sleep(0.3)
         # Botón "Retenciones" es painted — click por coordenadas relativas a la ventana
         rect = inv.rectangle()
@@ -136,7 +146,7 @@ class MonicaAutomator:
 
     def check_and_fix_retenciones(self, job: dict) -> dict:
         ret_win = self._win("Retenciones.*")
-        ret_win.set_focus()
+        self._focus(ret_win)
         time.sleep(0.3)
         result = {"corrected": False, "error": ""}
 
@@ -185,7 +195,7 @@ class MonicaAutomator:
 
     def set_observaciones(self, ret_serial: str):
         inv = self._win("Facturacion para el Cliente.*")
-        inv.set_focus()
+        self._focus(inv)
         time.sleep(0.3)
         obs_text = f"Ret-{ret_serial}"
         # Campo Observaciones — ventana 943x697, campo inferior izquierdo ≈ (210, 470)
@@ -198,7 +208,7 @@ class MonicaAutomator:
     def save_and_close_invoice(self):
         import pyautogui
         inv = self._win("Facturacion para el Cliente.*")
-        inv.set_focus()
+        self._focus(inv)
         time.sleep(0.3)
 
         r = inv.rectangle()
