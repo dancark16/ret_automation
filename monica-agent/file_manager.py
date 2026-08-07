@@ -34,9 +34,10 @@ def save_retention_pdf(source: Path, job: dict, invoice_date: str, base: Path) -
     folder = base / str(fecha.year) / MONTHS_ES[fecha.month]
     folder.mkdir(parents=True, exist_ok=True)
 
+    from client_aliases import resolve_client
     day = fecha.day
     seq = get_next_sequence(folder, day)
-    client = _sanitize(job.get("client_name", "CLIENTE"))[:25]
+    client = _sanitize(resolve_client(job.get("client_name", "CLIENTE")))[:25]
     inv = job.get("invoice_sequential", "0")
 
     filename = f"RET {day}.{seq} {client} F.{inv}.pdf"

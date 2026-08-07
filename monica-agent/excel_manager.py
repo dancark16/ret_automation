@@ -43,9 +43,10 @@ def register_retention(path: Path, job: dict, invoice_date: str, observation: st
 
     total_ret = round(job.get("renta_value", 0) + job.get("iva_value", 0), 2)
 
+    from client_aliases import resolve_client
     row_data = [
         fecha_str,                          # A - FECHA
-        job.get("client_name", ""),         # B - CLIENTE
+        resolve_client(job.get("client_name", "")),  # B - CLIENTE
         job.get("invoice_sequential", ""),  # C - FACTURA
         job.get("ret_number", ""),          # D - No. RETENCIÓN
         job.get("renta_pct", 0),            # E - RENTA %
@@ -71,6 +72,7 @@ def register_retention(path: Path, job: dict, invoice_date: str, observation: st
             return
         except PermissionError:
             if attempt < 4:
-                time.sleep(3)
+                print(f"[EXCEL] Archivo bloqueado, cierra LIBRO DIARIO.xlsx... reintentando en 5s ({attempt+1}/5)")
+                time.sleep(5)
             else:
                 raise
