@@ -67,6 +67,7 @@ class MonicaAutomator:
     def click_comenzar(self):
         """Desde la pantalla de inicio de Monica: Comenzar → Seleccionar Empresa."""
         import pyautogui
+        pyautogui.FAILSAFE = False
         main = self._win(MONICA_TITLE)
         r = main.rectangle()
         # "Comenzar" offset verificado: (1161, 446)
@@ -212,6 +213,7 @@ class MonicaAutomator:
 
     def save_and_close_invoice(self):
         import pyautogui
+        pyautogui.FAILSAFE = False
         inv = self._win("Facturacion para el Cliente.*")
         self._focus(inv)
         time.sleep(0.3)
