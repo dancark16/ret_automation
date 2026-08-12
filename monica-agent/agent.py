@@ -108,6 +108,7 @@ def process_job(job: dict, monica: MonicaAutomator):
 
     except Exception as e:
         observation = str(e)
+        print(f"[ERROR] {observation}")
         progress(rid, "error_general", "error", observation)
         try:
             monica.close_facturacion()
@@ -115,6 +116,10 @@ def process_job(job: dict, monica: MonicaAutomator):
             pass
 
     report_result(rid, success, observation)
+    if success:
+        print(f"[OK] Ret {job['ret_number']} procesada correctamente")
+    else:
+        print(f"[FALLO] Ret {job['ret_number']} — {observation}")
 
 
 def main():
