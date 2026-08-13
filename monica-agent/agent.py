@@ -51,9 +51,10 @@ def process_job(job: dict, monica: MonicaAutomator):
     success = False
 
     try:
-        # Paso 1: Abrir facturación — click_comenzar es seguro desde cualquier pantalla
+        # Paso 1: Abrir facturación
         progress(rid, "monica_facturacion", "running", "Abriendo módulo de facturación...")
-        monica.click_comenzar()
+        if monica.is_on_home_screen():
+            monica.click_comenzar()
         monica.open_facturacion()
         progress(rid, "monica_facturacion", "ok")
 

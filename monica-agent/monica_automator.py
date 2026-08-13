@@ -185,11 +185,14 @@ class MonicaAutomator:
         try:
             main = self.app.window(title_re=MONICA_TITLE)
             for desc in main.descendants():
-                if re.match(MODULOS_TITLE, desc.window_text()):
-                    return False
+                try:
+                    if re.match(MODULOS_TITLE, desc.window_text()):
+                        return False
+                except Exception:
+                    continue
             return True
         except Exception:
-            return False
+            return True  # Si hay error asumimos home screen e intentamos navegar
 
     def _cancel_ret(self):
         try:
