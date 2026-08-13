@@ -84,10 +84,12 @@ class MonicaAutomator:
             pass  # Ya estaba en MODULOS, no apareció el diálogo
 
     def open_facturacion(self):
+        import pyautogui
+        pyautogui.FAILSAFE = False
         main = self._win(MONICA_TITLE)
-        self._focus(main)
-        time.sleep(0.8)
-        keyboard.send_keys("%f")
+        r = main.rectangle()
+        # Click directo en botón Facturación — offset verificado (205, 240)
+        pyautogui.click(r.left + 205, r.top + 240)
         time.sleep(2.0)
         # Verificar que Facturación abrió
         try:
@@ -96,10 +98,13 @@ class MonicaAutomator:
             raise Exception("No se pudo abrir el módulo de Facturación")
 
     def open_invoice(self, invoice_sequential: str) -> bool:
-        main = self._win(MONICA_TITLE)
-        self._focus(main)
-        time.sleep(0.4)
-        keyboard.send_keys("%m")   # Alt+M = Modificar
+        import pyautogui
+        pyautogui.FAILSAFE = False
+        # Click en botón Modificar de la ventana Facturación
+        fac = self._win("Facturacion.*")
+        rf = fac.rectangle()
+        # Botón Modificar verificado anteriormente con Alt+M — ahora click directo
+        pyautogui.click(rf.left + 155, rf.top + 625)
         time.sleep(1)
 
         # Buscar el diálogo "Modificar Facturas"
