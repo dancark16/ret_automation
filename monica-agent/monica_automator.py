@@ -70,8 +70,10 @@ class MonicaAutomator:
         pyautogui.FAILSAFE = False
         main = self._win(MONICA_TITLE)
         r = main.rectangle()
-        # "Comenzar" offset verificado: (1161, 446)
-        pyautogui.click(r.left + 1161, r.top + 446)
+        w = r.right - r.left
+        h = r.bottom - r.top
+        # "Comenzar": proporcional al tamaño de ventana (la resolución de la PC remota cambia)
+        pyautogui.click(r.left + int(w * 0.839), r.top + int(h * 0.585))
         time.sleep(1.0)
         # Dialogo "Lista de Empresas" — empresa ya seleccionada, Enter = Seleccionar Empresa
         try:
@@ -88,10 +90,19 @@ class MonicaAutomator:
         pyautogui.FAILSAFE = False
         main = self._win(MONICA_TITLE)
         r = main.rectangle()
-        # Click directo en botón Facturación — offset verificado (205, 240)
-        pyautogui.click(r.left + 205, r.top + 240)
+        w = r.right - r.left
+        h = r.bottom - r.top
+        # Botón Facturación: proporcional al tamaño de ventana
+        pyautogui.click(r.left + int(w * 0.148), r.top + int(h * 0.323))
         time.sleep(2.0)
-        # Verificar que Facturación abrió
+        try:
+            self._win("Facturacion.*", timeout=4)
+            return
+        except TimeoutError:
+            pass
+        # Respaldo: atajo Alt+F (la ventana ya tiene foco por el click anterior)
+        keyboard.send_keys("%f")
+        time.sleep(2.0)
         try:
             self._win("Facturacion.*", timeout=4)
         except TimeoutError:
